@@ -1,0 +1,115 @@
+import timeit
+from random import random
+
+def swap(a_list, i, j):
+    a_list[i], a_list[j] = a_list[j], a_list[i]
+
+
+def shaker_sort(a_list):
+    """
+    Shaker/Cocktail sort - goes back and forth through the list carrying the smallest numbers to the front and the largest to the back
+
+    @author             Hadi Saab
+    @since              17/03/2016
+    @modified           17/03/2016
+    @param              a_list - a list of real numbers
+    @param
+    @precondition       a_list is a list of real numbers
+    @postcondition      returns a_list sorted from smallest to biggest value
+    @complexity         Best Case: O(N) - where N is the length of the list and is sorted already
+                        Worst Case: O(N^2) where N is the length of the list and it is sorted in reverse order
+
+    """
+    no_swaps = True
+
+    n = len(a_list)
+    moving_right_start = 0
+    moving_right_end = n-1
+    moving_left_start = n-2
+    moving_left_end = 0
+
+    for j in range(n-1):
+        if (j % 2 == 0):
+            for i in range(moving_right_start, moving_right_end):
+                if a_list[i] > a_list[i+1]:
+                    no_swaps = False
+                    swap(a_list , i, i+1)
+            moving_left_start -= 1
+            moving_right_end -= 1
+
+        else:
+            for i in range(moving_left_start, moving_left_end , -1):
+                if a_list[i-1] > a_list[i]:
+                    no_swaps = False
+                    swap(a_list, i, i-1)
+            moving_left_end += 1
+            moving_right_start += 1
+
+        if no_swaps:
+            break
+        no_swaps = True
+
+
+def time_shaker_sort(a_list):
+    """
+    Measures the time taken to run shaker_sort on a_list
+
+    @author             Hadi Saab
+    @since              17/03/2016
+    @modified           17/03/2016
+    @param              a_list - a list of real numbers
+    @param
+    @precondition       a_list is a list of real numbers
+    @postcondition      returns the time taken to sort the elements of a_list
+    @complexity         O(N) , where N is the size of the list???
+
+    """
+    start = timeit.default_timer()
+    shaker_sort(a_list)
+    taken = (timeit.default_timer() - start)
+    return taken
+
+
+def table_time_shaker_sort(a_list):
+    """
+    Measures the time taken to sort through the shaking sort method of a_list of varying sizes/at different lengths
+
+    @author             Hadi Saab
+    @since              17/03/2016
+    @modified           17/03/2016
+    @param              a_list - a list of real numbers
+    @param
+    @precondition       a_list is a list of real numbers
+    @postcondition      returns the time taken to sort the elements of a_list at different lengths of the list
+    @complexity         ???
+
+    """
+    random.seed()
+    a_list = []
+
+    #addding random real numbers between 0 and 1 to a_list
+    for i in range(2 ** 10):
+        a_list.append(random.random())
+
+    print("\n")
+    for i in range(11):
+        print(str(2 ** i) + "\n" + str(time_shaker_sort(a_list[1: 2 ** i])) + "\n")
+
+
+def hundred_list():
+    list_of_lists = [[] for i in range(100)]
+    for i in range(100):
+        for j in range(2 ** 10):
+            list_of_lists[i].append(random.random())
+    return list_of_lists
+
+def table_avg_time_shaker_sort(hundred_list):
+    sum_time = 0
+    for i in range(100):
+        start = timeit.default_timer()
+        shaker_sort(hundred_list[i])
+        taken = (timeit.default_timer() - start)
+        sum_time = sum_time + taken
+        average_time = sum_time / 100
+
+    print("\n" + "Average time to shake sort a list of 1024 elements is:" + str(average_time))
